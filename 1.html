@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Sneha 💍</title>
+    <style>
+        :root {
+            --bg-color: #ffafbd;
+            --env-color: #ff5e78;
+            --env-dark: #e63946;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        #heartCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-top: 40px;
+            font-size: 2.2rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        /* Envelope Position - Thoda niche kiya hai */
+        .container {
+            position: relative;
+            cursor: pointer;
+            perspective: 1000px;
+            margin-top: 220px; /* Isse envelope niche aayega */
+            z-index: 10;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background-color: var(--env-color);
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .envelope-wrapper::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            z-index: 5;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid var(--env-dark);
+            transform-origin: top;
+            transition: transform 0.5s ease;
+        }
+
+        .envelope-wrapper::after {
+            content: "";
+            position: absolute;
+            z-index: 4;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 100px solid var(--env-color);
+            bottom: 0;
+        }
+
+        /* Photo Card Adjusted for 1:1 Images */
+        .photo-card {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translate(-50%, 0);
+            width: 260px; /* Thoda wide kiya 1:1 ke liye */
+            height: 330px; 
+            background: white;
+            padding: 10px;
+            box-sizing: border-box;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .photo-card img {
+            width: 240px; /* Square Look */
+            height: 240px; 
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .quote-box {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #444;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        /* Animations */
+        .container.open .envelope-wrapper::before {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        .container.open .photo-card {
+            transform: translate(-50%, -230px); /* Adjust height for 1:1 */
+            z-index: 6;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tap-hint {
+            position: fixed;
+            bottom: 40px;
+            color: white;
+            font-size: 0.9rem;
+            z-index: 10;
+            background: rgba(0,0,0,0.1);
+            padding: 8px 20px;
+            border-radius: 20px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0.3; } }
+    </style>
+</head>
+<body>
+
+    <canvas id="heartCanvas"></canvas>
+
+    <h1>I Love You Sneha 💍</h1>
+
+    <div class="container" id="mainContainer">
+        <div class="envelope-wrapper">
+            <div class="photo-card" id="photoCard">
+                <img id="mainImage" src="1.jpeg" alt="Sneha">
+                <div class="quote-box" id="quoteText">
+                    Har pal tumhari yaad aati hai, you are my everything. ❤️
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tap-hint">Tap Envelope to See Memories</div>
+
+    <audio id="bgMusic" loop>
+        <source src="val.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Particles
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const hearts = [];
+        class Heart {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 20;
+                this.size = Math.random() * 10 + 5;
+                this.speed = Math.random() * 1.5 + 0.5;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.bezierCurveTo(this.x, this.y-3, this.x-5, this.y-3, this.x-5, this.y);
+                ctx.bezierCurveTo(this.x-5, this.y+3, this.x, this.y+5, this.x, this.y+8);
+                ctx.bezierCurveTo(this.x, this.y+5, this.x+5, this.y+3, this.x+5, this.y);
+                ctx.bezierCurveTo(this.x+5, this.y-3, this.x, this.y-3, this.x, this.y);
+                ctx.fill();
+                ctx.restore();
+            }
+            update() { this.y -= this.speed; if (this.y < -20) this.reset(); }
+        }
+        for (let i = 0; i < 40; i++) hearts.push(new Heart());
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach(h => { h.draw(); h.update(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Interaction
+        const container = document.getElementById('mainContainer');
+        const img = document.getElementById('mainImage');
+        const quote = document.getElementById('quoteText');
+        const music = document.getElementById('bgMusic');
+        let currentIndex = 0;
+        const totalImages = 15;
+        const quotes = [
+            "Har pal tumhari yaad aati hai, you are my everything. ❤️",
+            "Distance is just a test to see how far love can travel. ✈️",
+            "Tumhari smile dekh kar mera din ban jata hai. 😊",
+            "I promise to hold your hand forever. 💍",
+            "Life is beautiful because of you, Sneha. ✨",
+            "Counting days until I see you again. 🗓️",
+            "Happy Valentine's Day my love! You are my forever. 🌹",
+            "Tum meri duniya ho, aur hamesha rahogi. 🌎❤️",
+            "Everything is better when I'm with you. Just stay. ✨",
+            "No matter how far you are, you're always in my heart. 💓",
+            "Har dua mein bas tumhara naam hota hai. 🤲✨",
+            "I love the way you look at me. It makes me feel alive. 😍",
+            "Tumhari baatein hi meri sabse badi motivation hain. 💪❤️",
+            "You're not just my girl, you're my best friend too. 👩‍❤️‍👨",
+            "Hamesha mere sath rehna, kyunki tum bin sab adhura hai. 💍💕"
+        ];
+
+        container.addEventListener('click', () => {
+            if (music.paused) music.play().catch(() => {});
+            if (container.classList.contains('open')) {
+                container.classList.remove('open');
+                setTimeout(() => {
+                    currentIndex = (currentIndex + 1) % totalImages;
+                    img.src = `${currentIndex + 1}.jpeg`;
+                    quote.innerText = quotes[currentIndex];
+                }, 600);
+            } else {
+                container.classList.add('open');
+            }
+        });
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+    </script>
+</body>
+</html>
